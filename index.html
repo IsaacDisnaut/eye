@@ -125,12 +125,13 @@
     </div>
   </div>
 
-  <script>
+   <script>
     const innerCircles = document.querySelectorAll(".inner-circle");
+    const outerCircles = document.querySelectorAll(".outer-circle");
 
-    // ค่าเริ่มต้น (ตรงกลาง)
     let posX = 50;
     let posY = 50;
+    let closed = false;
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "a") posX = 30;
@@ -141,7 +142,9 @@
         posX = 50;
         posY = 50;
       }
-if (event.key.toLowerCase() === "x") {
+
+      // ปิด/เปิดตาเมื่อกด X
+      if (event.key.toLowerCase() === "x") {
         closed = !closed;
         outerCircles.forEach(circle => {
           if (closed) {
@@ -151,6 +154,7 @@ if (event.key.toLowerCase() === "x") {
           }
         });
       }
+
       innerCircles.forEach(circle => {
         circle.style.left = posX + "%";
         circle.style.top = posY + "%";
@@ -190,6 +194,7 @@ if (event.key.toLowerCase() === "x") {
 </body>
 
 </html>
+
 
 
 
