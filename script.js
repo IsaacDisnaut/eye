@@ -278,11 +278,11 @@ function connectToBroker() {
     );
     const messageTextArea = document.querySelector("#messagesub");
     messageTextArea.value += messagesub + "\r\n";
-      if (msg==="ON")
+      if (messagesub.toString()==="ON")
       {
           joinRoom();
       }
-      if(msg==="OFF")
+      if(messagesub.toString()==="OFF")
       {
        call.close();
       }
@@ -309,4 +309,5 @@ function unsubscribeToTopic() {
   statussub.style.color = "red";
   statussub.value = "UNSUBSCRIBED";
 }
+
 
