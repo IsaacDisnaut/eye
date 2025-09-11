@@ -125,41 +125,22 @@
     </div>
   </div>
 
-<script>
+  <script>
     const innerCircles = document.querySelectorAll(".inner-circle");
-    const outerCircles = document.querySelectorAll(".outer-circle");
 
-    let posX = 55; // เริ่มตรงกลางแต่เลื่อนไปขวานิดหน่อย
+    // ค่าเริ่มต้น (ตรงกลาง)
+    let posX = 50;
     let posY = 50;
-    let closed = false;
 
     document.addEventListener("keydown", (event) => {
-      const key = event.key.toLowerCase();
-
-      // เคลื่อนที่ด้วย WASD
-      if (key === "a") posX -= 5; // ซ้าย
-      if (key === "d") posX += 5; // ขวา
-      if (key === "w") posY -= 5; // ขึ้น
-      if (key === "s") posY += 5; // ลง
-
-      // รีเซ็ตกลาง
-      if (key === " ") {
-        posX = 55;
+      if (event.key === "ArrowLeft") posX = 30;
+      if (event.key === "ArrowRight") posX = 70;
+      if (event.key === "ArrowUp") posY = 30;
+      if (event.key === "ArrowDown") posY = 70;
+      if (event.key === " ") { // Spacebar รีเซ็ต
+        posX = 50;
         posY = 50;
       }
-
-      // ปิด/เปิดตา
-      if (key === "x") {
-        closed = !closed;
-        outerCircles.forEach(circle => {
-          if (closed) circle.classList.add("closed");
-          else circle.classList.remove("closed");
-        });
-      }
-
-      // จำกัดไม่ให้ออกนอกตาขาว
-      posX = Math.max(20, Math.min(80, posX));
-      posY = Math.max(20, Math.min(80, posY));
 
       innerCircles.forEach(circle => {
         circle.style.left = posX + "%";
@@ -167,6 +148,7 @@
       });
     });
   </script>
+
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
@@ -199,6 +181,7 @@
 </body>
 
 </html>
+
 
 
 
