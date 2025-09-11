@@ -88,7 +88,7 @@ function joinRoom() {
         getUserMedia({ video: true, audio: true }, (stream) => {
             local_stream = stream;
             setLocalStream(local_stream)
-            notify("Joining peer")
+           
             let call = peer.call(room_id, stream)
             call.on('stream', (stream) => {
                 setRemoteStream(stream);
@@ -139,7 +139,7 @@ function joinRoomWithoutCamShareScreen() {
             return Object.assign(track, { enabled: false });
         };
 
-        notify("Joining peer")
+       
         let call = peer.call(room_id, createMediaStreamFake())
         call.on('stream', (stream) => {
             setRemoteStream(stream);
@@ -171,7 +171,7 @@ function joinRoomShareVideoAsStream() {
         const video = document.getElementById('local-media');
         video.onplay = function () {
             const stream = video.captureStream();
-            notify("Joining peer")
+            
             let call = peer.call(room_id, stream)
 
             // Show remote stream on my side
@@ -318,4 +318,5 @@ function publishMessage(direct) {
     function reloadEye() {
       const f = document.getElementById('eye-monitor');
       f.src = PI_EYE_URL;
+
     }
