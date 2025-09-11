@@ -141,7 +141,16 @@
         posX = 50;
         posY = 50;
       }
-
+if (event.key.toLowerCase() === "x") {
+        closed = !closed;
+        outerCircles.forEach(circle => {
+          if (closed) {
+            circle.classList.add("closed");
+          } else {
+            circle.classList.remove("closed");
+          }
+        });
+      }
       innerCircles.forEach(circle => {
         circle.style.left = posX + "%";
         circle.style.top = posY + "%";
@@ -181,6 +190,7 @@
 </body>
 
 </html>
+
 
 
 
