@@ -223,32 +223,28 @@ function stopScreenSharing() {
 }
 
 
-const host = "ws://10.109.234.237:9001/mqtt";
-const clientId = "client" + Math.random().toString(36).substring(7);
-
-var direct='';
-var count=0;
+let mqttClientsub;
 const topic = "Isaac";
-const topic1 = "Isaac1";
 
 window.addEventListener("load", (event) => {
-  connectToBroker_pub();
-  const control = document.querySelector(".control");
-  const publishBtn = document.querySelector(".publish");
-  publishBtn.addEventListener("click", function () {
-    publishMessage();
+  connectToBroker();
+
+  const subscribeBtn = document.querySelector("#subscribe");
+  subscribeBtn.addEventListener("click", function () {
+    subscribeToTopic();
   });
 
-  control.addEventListener("click", function () {
-    publishMessage();
+  const unsubscribeBtn = document.querySelector("#unsubscribe");
+  unsubscribeBtn.addEventListener("click", function () {
+    unsubscribeToTopic();
   });
 });
 
-function connectToBroker_pub() {
+function connectToBroker() {
   const clientId = "client" + Math.random().toString(36).substring(7);
 
   // Change this to point to your MQTT broker
-  
+   const host = "ws://10.109.234.237:9001/mqtt";
 
   const options = {
     keepalive: 60,
@@ -260,63 +256,57 @@ function connectToBroker_pub() {
     connectTimeout: 30 * 1000,
   };
 
-  mqttClient = mqtt.connect(host, options);
+  mqttClientsub = mqtt.connect(host, options);
 
-  mqttClient.on("error", (err) => {
+  mqttClientsub.on("error", (err) => {
     console.log("Error: ", err);
-    mqttClient.end();
+    mqttClientsub.end();
   });
 
-  mqttClient.on("reconnect", () => {
+  mqttClientsub.on("reconnect", () => {
     console.log("Reconnecting...");
   });
 
-  mqttClient.on("connect", () => {
+  mqttClientsub.on("connect", () => {
     console.log("Client connected:" + clientId);
-
-  mqttClient.subscribe("topic1", { qos: 0 }, (err) => {
-        if (!err) {
-          console.log("Subscribed to: topic1");
-        }
-      });
   });
 
   // Received
-  mqttClient.on("message", (topic1, message, packet) => {
+  mqttClientsub.on("messagesub", (topicsub, messagesub, packet) => {
     console.log(
-      "Received Message: " + message.toString() + "\nOn topic: " + topic
+      "Received Message: " + messagesub.toString() + "\nOn topic: " + topicsub
     );
     const messageTextArea = document.querySelector("#messagesub");
-      messageTextArea.value += `[${topic1}] ${message}\r\n`;
+    messageTextArea.value += messagesub + "\r\n";
+      if (msg==="ON")
+      {
+          joinRoom();
+      }
+      if(msg==="OFF")
+      {
+       call.close();
+      }
+      
   });
 }
-var count;
-function publishMessage(direct) {
-  const messageInput = document.querySelector("#message");
-    
-  
 
-  if(direct != ''){
-    message= direct;
-  }
-  else{
-    message='';
-  }
-  console.log(`Sending Topic: ${topic}, Message: ${message}`);
+function subscribeToTopic() {
+  const statussub = document.querySelector("#statussub");
+  const topicsub = document.querySelector("#topicsub").value.trim();
+  console.log(`Subscribing to Topic: ${topic}`);
 
-  mqttClient.publish(topic, message, {
-    qos: 0,
-    retain: false,
-  });
-    mqttClient.publish(topic, count, {
-    qos: 0,
-    retain: false,
-  });
-  //messageInput.value = "";
+  mqttClientsub.subscribe(topicsub, { qos: 0 });
+  statussub.style.color = "green";
+  statussub.value = "SUBSCRIBED";
 }
 
-    function reloadEye() {
-      const f = document.getElementById('eye-monitor');
-      f.src = PI_EYE_URL;
+function unsubscribeToTopic() {
+  const statussub = document.querySelector("#statussub");
+  const topicsub = document.querySelector("#topicsub").value.trim();
+  console.log(`Unsubscribing to Topic: ${topicsub}`);
 
-    }
+  mqttClientsub.unsubscribe(topicsub, { qos: 0 });
+  statussub.style.color = "red";
+  statussub.value = "UNSUBSCRIBED";
+}
+
