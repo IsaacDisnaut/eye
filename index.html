@@ -125,35 +125,41 @@
     </div>
   </div>
 
-    <script>
+<script>
     const innerCircles = document.querySelectorAll(".inner-circle");
     const outerCircles = document.querySelectorAll(".outer-circle");
 
-    let posX = 50;
+    let posX = 55; // เริ่มตรงกลางแต่เลื่อนไปขวานิดหน่อย
     let posY = 50;
     let closed = false;
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowLeft") posX = 30;
-      if (event.key === "ArrowRight") posX = 70;
-      if (event.key === "ArrowUp") posY = 30;
-      if (event.key === "ArrowDown") posY = 70;
-      if (event.key === " ") { // Spacebar รีเซ็ต
-        posX = 50;
+      const key = event.key.toLowerCase();
+
+      // เคลื่อนที่ด้วย WASD
+      if (key === "a") posX -= 5; // ซ้าย
+      if (key === "d") posX += 5; // ขวา
+      if (key === "w") posY -= 5; // ขึ้น
+      if (key === "s") posY += 5; // ลง
+
+      // รีเซ็ตกลาง
+      if (key === " ") {
+        posX = 55;
         posY = 50;
       }
 
-      // ปิด/เปิดตาเมื่อกด X
-      if (event.key.toLowerCase() === "x") {
+      // ปิด/เปิดตา
+      if (key === "x") {
         closed = !closed;
         outerCircles.forEach(circle => {
-          if (closed) {
-            circle.classList.add("closed");
-          } else {
-            circle.classList.remove("closed");
-          }
+          if (closed) circle.classList.add("closed");
+          else circle.classList.remove("closed");
         });
       }
+
+      // จำกัดไม่ให้ออกนอกตาขาว
+      posX = Math.max(20, Math.min(80, posX));
+      posY = Math.max(20, Math.min(80, posY));
 
       innerCircles.forEach(circle => {
         circle.style.left = posX + "%";
@@ -193,6 +199,7 @@
 </body>
 
 </html>
+
 
 
 
