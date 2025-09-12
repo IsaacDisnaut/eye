@@ -23,7 +23,12 @@ function createRoom() {
         return;
     }
     room_id = room;
-    peer = new Peer(room_id)
+        peer = new Peer(undefined, {
+  host: '10.109.234.237',
+  port: 9000,
+  path: '/peerjs',
+  debug: 2
+})
     peer.on('open', (id) => {
         console.log("Peer Room ID: ", id)
         getUserMedia({ video: true, audio: true }, (stream) => {
@@ -64,7 +69,7 @@ function setRemoteStream(stream) {
     document.getElementById("remote-vid-container").hidden = false;
     let video = document.getElementById("remote-video");
     video.srcObject = stream;
-    video.play();
+    //video.play();
 }
 
 
@@ -81,7 +86,12 @@ function joinRoom() {
         return;
     }
     room_id = room;
-    peer = new Peer()
+        peer = new Peer(undefined, {
+  host: '10.109.234.237',
+  port: 9000,
+  path: '/peerjs',
+  debug: 2
+})
     peer.on('open', (id) => {
         console.log("Connected room with Id: " + id)
 
@@ -104,7 +114,7 @@ function joinRoom() {
 function joinRoomWithoutCamShareScreen() {
     // join a call and drirectly share screen, without accesing camera
     console.log("Joining Room")
-    let room = 2;
+    let room = "248932";
     if (room == " " || room == "") {
         alert("Please enter room number")
         return;
@@ -223,28 +233,16 @@ function stopScreenSharing() {
 }
 
 
-let mqttClientsub;
-const topic = "Isaac";
+const topicsub = "Isaac";
 
 window.addEventListener("load", (event) => {
   connectToBroker();
 
-  const subscribeBtn = document.querySelector("#subscribe");
-  subscribeBtn.addEventListener("click", function () {
-    subscribeToTopic();
-  });
-
-  const unsubscribeBtn = document.querySelector("#unsubscribe");
-  unsubscribeBtn.addEventListener("click", function () {
-    unsubscribeToTopic();
-  });
 });
 
 function connectToBroker() {
   const clientId = "client" + Math.random().toString(36).substring(7);
-
-  // Change this to point to your MQTT broker
-   const host = "ws://10.109.234.237:9001/mqtt";
+  const host = "ws://10.109.234.237:9001/mqtt"; // เปลี่ยนเป็น broker ของคุณ
 
   const options = {
     keepalive: 60,
@@ -256,58 +254,123 @@ function connectToBroker() {
     connectTimeout: 30 * 1000,
   };
 
-  mqttClientsub = mqtt.connect(host, options);
+  mqttClient = mqtt.connect(host, options);
 
-  mqttClientsub.on("error", (err) => {
+  mqttClient.on("error", (err) => {
     console.log("Error: ", err);
-    mqttClientsub.end();
+    mqttClient.end();
   });
 
-  mqttClientsub.on("reconnect", () => {
+  mqttClient.on("reconnect", () => {
     console.log("Reconnecting...");
   });
 
-  mqttClientsub.on("connect", () => {
-    console.log("Client connected:" + clientId);
+  mqttClient.on("connect", () => {
+    console.log("Client connected:", clientId);
+
+    // ✅ auto subscribe to Isaac1
+    const topic = "Isaac";
+    mqttClient.subscribe(topic, { qos: 0 }, (err) => {
+      if (!err) {
+        console.log("Auto subscribed to:", topic);
+      }
+    });
   });
 
-  // Received
-  mqttClientsub.on("messagesub", (topicsub, messagesub, packet) => {
-    console.log(
-      "Received Message: " + messagesub.toString() + "\nOn topic: " + topicsub
-    );
-    const messageTextArea = document.querySelector("#messagesub");
-    messageTextArea.value += messagesub + "\r\n";
-      if (messagesub.toString()==="ON")
-      {
-          joinRoom();
-      }
-      if(messagesub.toString()==="OFF")
-      {
-       call.close();
-      }
-      
+  // รับข้อความ
+  mqttClient.on("message", (topic, message) => {
+    const msg = message.toString();
+    console.log("Received:", msg, "on topic:", topic);
+
+    // ✅ ถ้า msg เท่ากับ "x" เล่นเสียง
+    if (msg === "ON") {
+        joinRoom();
+    document.querySelector(".container").hidden = false;
+    }
+    if(msg === "OFF")
+    {
+        document.querySelector(".container").hidden = true;
+        
+    }
+    if(msg === "eyeup")
+    {
+        moveEyesUp();
+    }
+    if(msg === "eyedown")
+    {
+        moveEyesDown();
+    }
+    if(msg === "eyeleft")
+    {
+        moveEyesLeft();
+    }
+     if(msg === "eyeright")
+    {
+        moveEyesRight();
+    }
+    if(msg === "eyecenter")
+    {
+        resetEyes();
+    }
+    if(msg === "eyeclose")
+    {
+        document.querySelector(".container").hidden = true;
+
+// แสดง container อีกครั้งหลังจาก 1 วินาที (1000 ms)
+setTimeout(() => {
+  document.querySelector(".container").hidden = false;
+}, 1000);
+    }
+
   });
 }
 
-function subscribeToTopic() {
-  const statussub = document.querySelector("#statussub");
-  const topicsub = document.querySelector("#topicsub").value.trim();
-  console.log(`Subscribing to Topic: ${topic}`);
+// เริ่มทำงานอัตโนมัติ
+window.addEventListener("load", () => {
+  connectToBroker();
+});
 
-  mqttClientsub.subscribe(topicsub, { qos: 0 });
-  statussub.style.color = "green";
-  statussub.value = "SUBSCRIBED";
+const innerCircles = document.querySelectorAll(".inner-circle");
+const outerCircles = document.querySelectorAll(".outer-circle");
+
+let posX = 50;
+let posY = 50;
+
+// ฟังก์ชันขยับตา
+function moveEyesLeft() {
+  posX = 30;
+  updateEyes();
 }
 
-function unsubscribeToTopic() {
-  const statussub = document.querySelector("#statussub");
-  const topicsub = document.querySelector("#topicsub").value.trim();
-  console.log(`Unsubscribing to Topic: ${topicsub}`);
-
-  mqttClientsub.unsubscribe(topicsub, { qos: 0 });
-  statussub.style.color = "red";
-  statussub.value = "UNSUBSCRIBED";
+function moveEyesRight() {
+  posX = 70;
+  updateEyes();
 }
+
+function moveEyesUp() {
+  posY = 30;
+  updateEyes();
+}
+
+function moveEyesDown() {
+  posY = 70;
+  updateEyes();
+}
+
+function resetEyes() {
+  posX = 50;
+  posY = 50;
+  updateEyes();
+}
+
+// ฟังก์ชันอัปเดตตำแหน่งตา
+function updateEyes() {
+  innerCircles.forEach(circle => {
+    circle.style.left = posX + "%";
+    circle.style.top = posY + "%";
+  });
+}
+
+
 
 
