@@ -116,7 +116,7 @@
                     <video height="300" id="remote-video" controls class="remote-video" hidden></video>
                 </div>
             </div>
- <div class="container">
+ <div class="container" hidden>
     <div class="outer-circle">
       <div class="inner-circle"></div>
     </div>
@@ -125,42 +125,7 @@
     </div>
   </div>
 
-   <script>
-    const innerCircles = document.querySelectorAll(".inner-circle");
-    const outerCircles = document.querySelectorAll(".outer-circle");
-
-    let posX = 50;
-    let posY = 50;
-    let closed = false;
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "a") posX = 30;
-      if (event.key === "d") posX = 70;
-      if (event.key === "w") posY = 30;
-      if (event.key === "s") posY = 70;
-      if (event.key === " ") { // Spacebar รีเซ็ต
-        posX = 50;
-        posY = 50;
-      }
-
-      // ปิด/เปิดตาเมื่อกด X
-      if (event.key.toLowerCase() === "x") {
-        closed = !closed;
-        outerCircles.forEach(circle => {
-          if (closed) {
-            circle.classList.add("closed");
-          } else {
-            circle.classList.remove("closed");
-          }
-        });
-      }
-
-      innerCircles.forEach(circle => {
-        circle.style.left = posX + "%";
-        circle.style.top = posY + "%";
-      });
-    });
-  </script>
+   
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -170,13 +135,13 @@
 
     <!-- check https://peerjs.com/ for latest CDN-->
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script src="script.js"></script>
-            
+    <script src="script2.js"></script>
+         
 
     <script>
     
         let hashValue = window.location.hash.substring(1); 
-        
+        joinRoom();
         if (hashValue) {
            //document.getElementById("result").innerText = "คุณส่งค่า hash มา: " + hashValue;
 
@@ -194,6 +159,7 @@
 </body>
 
 </html>
+
 
 
 
